@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Water Segmentation</title>
+  <style>
+    body { 
+      font-family: Arial; 
+      margin: 30px; 
+      text-align: center; 
+      background: #fafafa; 
+    }
+    img {
+      width: 500px;
+      height: auto;
+      border: 2px solid #333;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    }
+    .container { 
+      display: flex; 
+      justify-content: center; 
+      gap: 40px; 
+      flex-wrap: wrap; 
+      margin-top: 20px;
+    }
+    .box { 
+      min-width: 300px; 
+    }
+    .msg { color: red; }
+  </style>
+</head>
+<body>
+  <h1>🌊 Water Segmentation </h1>
+  <form action="{{ url_for('predict') }}" method="post" enctype="multipart/form-data">
+    <p><input type="file" name="file" accept=".tif,.tiff" required></p>
+    <p><button type="submit">🔍 Predict</button></p>
+  </form>
+
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      {% for m in messages %}
+        <p class="msg">{{ m }}</p>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  {% if uploaded_filename %}
+    <h2>Results for: {{ uploaded_filename }}</h2>
+    <div class="container">
+      <div class="box">
+        <h3>Original</h3>
+        <img src="{{ preview_img }}" alt="original">
+      </div>
+      <div class="box">
+        <h3>Predicted Mask</h3>
+        <img src="{{ mask_img }}" alt="mask">
+      </div>
+      <div class="box">
+        <h3>Overlay</h3>
+        <img src="{{ overlay_img }}" alt="overlay">
+      </div>
+    </div>
+
+    {% if iou_value is not none %}
+      <h3>IoU Score: {{ "%.4f"|format(iou_value) }}</h3>
+    {% endif %}
+  {% endif %}
+</body>
+</html>
